@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  userService:
+    image: tirthdocker2001/ms_nodejs_rabbitmq-userservice:latest
+    ports:
+      - '3001:3001'
+
+  orderService:
+    image: tirthdocker2001/ms_nodejs_rabbitmq-orderservice:latest
+    ports:
+      - '3002:3002'
+
+  rabbitmq:
+    image: tirthdocker2001/ms_nodejs_rabbitmq-rabbitmq:latest
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest

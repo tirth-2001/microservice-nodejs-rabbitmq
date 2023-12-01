@@ -13,3 +13,14 @@ curl --location 'http://localhost:3001/user' \
     "email": "tirth@example.com"
 }'
 ```
+
+tirthdocker2001
+
+cd ms_nodejs_rabbitmq/userService
+docker build -t tirthdocker2001/ms_nodejs_rabbitmq-userservice:latest .
+
+cd ms_nodejs_rabbitmq/orderService
+docker build -t tirthdocker2001/ms_nodejs_rabbitmq-orderservice:latest .
+
+cd ms_nodejs_rabbitmq/rabbitMQ
+docker build -t tirthdocker2001/ms_nodejs_rabbitmq-rabbitmq:latest .

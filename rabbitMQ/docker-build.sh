@@ -1,0 +1,1 @@
+docker build -t tirthdocker2001/ms_nodejs_rabbitmq-rabbitmq:latest .
