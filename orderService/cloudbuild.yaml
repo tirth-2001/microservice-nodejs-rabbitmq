@@ -4,8 +4,8 @@ steps:
       [
         'build',
         '-t',
-        'gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice-v2:amd64',
+        'gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice:$_TAG',
         '.',
       ]
 images:
-  - 'gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice-v2:amd64'
+  - 'gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice:$_TAG'
