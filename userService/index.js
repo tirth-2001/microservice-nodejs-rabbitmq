@@ -3,28 +3,44 @@ const bodyParser = require('body-parser')
 const amqp = require('amqplib')
 
 const app = express()
-const port = 3001
+const port = process.env.PORT || 3001
 
 app.use(bodyParser.json())
 
+app.get('/', (req, res) => {
+	res.json({ message: 'root of userService working fine' })
+})
+
+app.get('/ping', (req, res) => {
+	res.json({ message: 'pong' })
+})
+
 app.post('/user', async (req, res) => {
-	const { username, email } = req.body
+	try {
+		const { username, email } = req.body
 
-	// Send a message to orderService
-	await sendMessage('order_queue', {
-		userId: username,
-		product: 'DefaultProduct',
-		quantity: 1,
-	})
+		// Send a message to orderService
+		await sendMessage('order_queue', {
+			userId: username,
+			product: 'DefaultProduct',
+			quantity: 1,
+		})
 
-	console.log('[user service] after RabbitMQ message send')
+		console.log('[user service] after RabbitMQ message send')
 
-	// Logic to save user data
-	res.json({ message: 'User created successfully', username, email })
+		// Logic to save user data
+		res.json({ message: 'User created successfully', username, email })
+	} catch (err) {
+		console.log('[userService] error in /user', err)
+		res.json({
+			message: 'Error in user create : ' + err.message,
+			err: JSON.stringify(err),
+		})
+	}
 })
 
 app.listen(port, () => {
-	console.log(`userService is running on http://localhost:${port}`)
+	console.log(`userService is running on port : ${port}`)
 })
 
 async function sendMessage(queue, message) {

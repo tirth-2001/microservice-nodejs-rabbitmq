@@ -3,35 +3,51 @@ const bodyParser = require('body-parser')
 const amqp = require('amqplib')
 
 const app = express()
-const port = 3002
+const port = process.env.PORT || 3002
 
 app.use(bodyParser.json())
 
+app.get('/', (req, res) => {
+	res.json({ message: 'root of orderService working fine' })
+})
+
+app.get('/ping', (req, res) => {
+	res.json({ message: 'pong' })
+})
+
 // Connect to RabbitMQ and listen for messages
 connectToRabbitMQ('order_queue', (message) => {
-	const { userId, product, quantity } = JSON.parse(message.content.toString())
-	// Logic to create an order
+	try {
+		const { userId, product, quantity } = JSON.parse(message.content.toString())
+		// Logic to create an order
 
-	console.log('getting message in order_queue', message.content.toString())
+		console.log('getting message in order_queue', message.content.toString())
 
-	setTimeout(() => {
-		console.log(
-			`Order created for user ${userId} - Product: ${product}, Quantity: ${quantity}`
-		)
-	}, 3000)
+		setTimeout(() => {
+			console.log(
+				`Order created for user ${userId} - Product: ${product}, Quantity: ${quantity}`
+			)
+		}, 3000)
+	} catch (err) {
+		console.log('[orderService] error in connectToRabbitMQ callback', err)
+	}
 })
 
 app.listen(port, () => {
-	console.log(`orderService is running on http://localhost:${port}`)
+	console.log(`orderService is running on port : ${port}`)
 })
 
 async function connectToRabbitMQ(queue, callback) {
-	const connection = await amqp.connect('amqp://rabbitmq')
-	const channel = await connection.createChannel()
+	try {
+		const connection = await amqp.connect('amqp://rabbitmq')
+		const channel = await connection.createChannel()
 
-	console.log('[connectRabbitMq] queue', queue)
-	console.log('[connectRabbitMq] callback', callback)
+		console.log('[connectRabbitMq] queue', queue)
+		console.log('[connectRabbitMq] callback', callback)
 
-	channel.assertQueue(queue, { durable: false })
-	channel.consume(queue, callback, { noAck: true })
+		channel.assertQueue(queue, { durable: false })
+		channel.consume(queue, callback, { noAck: true })
+	} catch (err) {
+		console.log('[orderService] error in connectToRabbitMQ', err)
+	}
 }

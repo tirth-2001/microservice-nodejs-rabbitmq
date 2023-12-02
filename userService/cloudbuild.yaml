@@ -1,0 +1,11 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t',
+        'gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice-v2:amd64',
+        '.',
+      ]
+images:
+  - 'gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice-v2:amd64'
