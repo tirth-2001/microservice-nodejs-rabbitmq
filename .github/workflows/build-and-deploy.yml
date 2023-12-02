@@ -24,9 +24,15 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      - name: Build and Push Docker Image
+      - name: Authenticate with Google Cloud
+        run: gcloud auth login
+
+      - name: Build and Push Docker Image for userService
         run: |
           gcloud builds submit --config userService/cloudbuild.yaml userService
+
+      - name: Build and Push Docker Image for orderService
+        run: |
           gcloud builds submit --config orderService/cloudbuild.yaml orderService
 
   deploy:
@@ -35,13 +41,17 @@ jobs:
 
     steps:
       - name: Set up Google Cloud SDK
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v1
         with:
+          version: '>= 363.0.0'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      - name: Deploy to GKE
+      - name: Deploy to GKE - userService
         run: |
-          kubectl apply -f userService/kubernetes/deployment.yaml
-          kubectl apply -f orderService/kubernetes/deployment.yaml
+          kubectl apply -f userService/deployment.yaml
+
+      - name: Deploy to GKE - orderService
+        run: |
+          kubectl apply -f orderService/deployment.yaml
