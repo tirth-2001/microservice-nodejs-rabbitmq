@@ -116,15 +116,6 @@ jobs:
       - name: Check workspace contents before 7
         run: ls
 
-      - name: Checkout Repository 2
-        uses: actions/checkout@v2
-
-      - name: Change working directory to repo root 2
-        run: cd $GITHUB_WORKSPACE
-
-      - name: Check workspace contents before 8
-        run: ls
-
       - name: Deploy to GKE - userService
         run: kubectl apply -f userService/deployment.yaml
 
