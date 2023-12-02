@@ -46,10 +46,16 @@ jobs:
       GCP_K8_REGION: ${{ secrets.GCP_K8_REGION }}
 
     steps:
+      - name: Check workspace contents before 1
+        run: ls -R
+
       - name: Authenticate with Google Cloud
         uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Check workspace contents before 2
+        run: ls -R
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -58,6 +64,9 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
+
+      - name: Check workspace contents before 3
+        run: ls -R
 
       # - name: Install Google Cloud SDK
       #   run: |
@@ -81,31 +90,34 @@ jobs:
 
       - uses: simenandre/setup-gke-gcloud-auth-plugin@v1
 
+      - name: Check workspace contents before 4
+        run: ls -R
+
       - uses: google-github-actions/get-gke-credentials@v1
         with:
           cluster_name: ${{ secrets.GCP_K8_CLUSTER }}
           location: ${{ secrets.GCP_K8_REGION }}
 
+      - name: Check workspace contents before 5
+        run: ls -R
+
       - name: Debug kubectl config
         run: kubectl config view
+
+      - name: Check workspace contents before 6
+        run: ls -R
 
       - name: Debug kubectl context
         run: kubectl config current-context
 
-      - name: Check workspace contents before
+      - name: Check workspace contents before 7
         run: ls -R
 
       - name: Change working directory to repo root
         run: cd $GITHUB_WORKSPACE
 
-      - name: Check workspace contents before
+      - name: Check workspace contents before 8
         run: ls -R
-
-      - name: Check userService contents
-        run: ls -R userService
-
-      - name: Check orderService contents
-        run: ls -R orderService
 
       - name: Deploy to GKE - userService
         run: kubectl apply -f userService/deployment.yaml
