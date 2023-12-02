@@ -1,0 +1,89 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'userService/**'
+      - 'orderService/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Authenticate with Google Cloud
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: '>= 363.0.0'
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Generate Unique Image Tag
+        id: tag
+        run: echo "TAG=$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
+
+      - name: Debug unique tag
+        run: echo "TAG is ${{ env.TAG }}, sed expression is 's|\$_TAG|${{ env.TAG }}|g'"
+
+      - name: Replace TAG placeholder - userService
+        run: sed -i "s|\$_TAG|${{ env.TAG }}|g" userService/cloudbuild.yaml
+
+      - name: Build and Push Docker Image - userService
+        run: gcloud builds submit --config userService/cloudbuild.yaml userService --suppress-logs
+
+      - name: Replace TAG placeholder - orderService
+        run: sed -i "s|\$_TAG|${{ env.TAG }}|g" orderService/cloudbuild.yaml
+
+      - name: Build and Push Docker Image - orderService
+        run: gcloud builds submit --config orderService/cloudbuild.yaml orderService --suppress-logs
+
+      # - name: Checkout Repository
+      #   uses: actions/checkout@v2
+
+      - name: Check workspace contents before 3
+        run: ls
+
+      - uses: simenandre/setup-gke-gcloud-auth-plugin@v1
+
+      - name: Check workspace contents before 4
+        run: ls
+
+      - uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: ${{ secrets.GCP_K8_CLUSTER }}
+          location: ${{ secrets.GCP_K8_REGION }}
+
+      - name: Debug kubectl config
+        run: kubectl config view
+
+      - name: Debug kubectl context
+        run: kubectl config current-context
+
+      - name: Check workspace contents before 7
+        run: ls
+
+      - name: Debug unique tag 2
+        run: echo "TAG is ${{ env.TAG }}, and/or ${TAG}"
+
+      - name: Update Deployment YAML - userService
+        run: sed -i "s|\$_TAG|${{ env.TAG }}|g" userService/deployment.yaml
+
+      - name: Update Deployment YAML - orderService
+        run: sed -i "s|\$_TAG|${{ env.TAG }}|g" orderService/deployment.yaml
+
+      - name: Deploy to GKE - userService
+        run: kubectl apply -f userService/deployment.yaml
+
+      - name: Deploy to GKE - orderService
+        run: kubectl apply -f orderService/deployment.yaml
