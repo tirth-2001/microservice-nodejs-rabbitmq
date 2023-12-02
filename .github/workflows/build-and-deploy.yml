@@ -71,6 +71,10 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp-key.json
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
+      - name: Log in to gcloud
+        run: gcloud auth login --quiet
+        # This step is optional, but it might help ensure that the correct account is active.
+
       - name: Set Kubernetes Context
         run: gcloud container clusters get-credentials $GCP_K8_CLUSTER --region=$GCP_K8_REGION
         # Replace YOUR_CLUSTER_NAME and YOUR_REGION with the actual name and region of your GKE cluster.
