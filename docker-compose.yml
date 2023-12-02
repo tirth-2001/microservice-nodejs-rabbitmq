@@ -2,17 +2,17 @@ version: '3'
 
 services:
   userService:
-    image: tirthdocker2001/ms_nodejs_rabbitmq-userservice:latest
+    image: gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice-v2:arm64
     ports:
       - '3001:3001'
 
   orderService:
-    image: tirthdocker2001/ms_nodejs_rabbitmq-orderservice:latest
+    image: gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice-v2:arm64
     ports:
       - '3002:3002'
 
   rabbitmq:
-    image: tirthdocker2001/ms_nodejs_rabbitmq-rabbitmq:latest
+    image: gcr.io/micro-services-406818/ms_nodejs_rabbitmq-rabbitmq-v2:arm64
     ports:
       - '5672:5672'
       - '15672:15672'

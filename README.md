@@ -14,6 +14,7 @@ curl --location 'http://localhost:3001/user' \
 }'
 ```
 
+Tirth Docker ID
 tirthdocker2001
 
 cd ms_nodejs_rabbitmq/userService
@@ -24,3 +25,47 @@ docker build -t tirthdocker2001/ms_nodejs_rabbitmq-orderservice:latest .
 
 cd ms_nodejs_rabbitmq/rabbitMQ
 docker build -t tirthdocker2001/ms_nodejs_rabbitmq-rabbitmq:latest .
+
+GCP Project ID
+micro-services-406818
+
+# Build and push userService image
+
+docker build -t gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice:latest userService/
+docker push gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice:latest
+
+docker buildx build --platform linux/arm64 -t gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice-v2:arm64 userService/
+
+docker push gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice-v2:arm64
+
+# Build and push orderService image
+
+docker build -t gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice:latest orderService/
+docker push gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice:latest
+
+docker buildx build --platform linux/arm64 -t gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice-v2:arm64 orderService/
+
+docker push gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice-v2:arm64
+
+# Build and push rabbitMQ image
+
+docker build -t gcr.io/micro-services-406818/ms_nodejs_rabbitmq-rabbitmq:latest rabbitMQ/
+docker push gcr.io/micro-services-406818/ms_nodejs_rabbitmq-rabbitmq:latest
+
+docker buildx build --platform linux/arm64 -t gcr.io/micro-services-406818/ms_nodejs_rabbitmq-rabbitmq-v2:arm64
+
+docker push gcr.io/micro-services-406818/ms_nodejs_rabbitmq-rabbitmq-v2:arm64
+
+# Kubernetes deploy command
+
+kubectl apply -f userService-deployment.yaml
+kubectl apply -f orderService-deployment.yaml
+kubectl apply -f rabbitMQ-deployment.yaml
+kubectl apply -f userService-service.yaml
+kubectl apply -f orderService-service.yaml
+kubectl apply -f rabbitMQ-service.yaml
+
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+docker run -it --rm gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice-v2:arm64 sh
