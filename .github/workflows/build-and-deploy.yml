@@ -33,14 +33,17 @@ jobs:
         id: tag
         run: echo "TAG=$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
 
+      - name: Debug unique tag
+        run: echo "TAG is ${{ env.TAG }}, sed expression is 's|\$_TAG|${{ env.TAG }}|g'"
+
       - name: Replace TAG placeholder - userService
-        run: sed -i "s|\$_TAG|${{ steps.tag.outputs.TAG }}|g" userService/cloudbuild.yaml
+        run: sed -i "s|\$_TAG|${{ env.TAG }}|g" userService/cloudbuild.yaml
 
       - name: Build and Push Docker Image - userService
         run: gcloud builds submit --config userService/cloudbuild.yaml userService --suppress-logs
 
       - name: Replace TAG placeholder - orderService
-        run: sed -i "s|\$_TAG|${{ steps.tag.outputs.TAG }}|g" orderService/cloudbuild.yaml
+        run: sed -i "s|\$_TAG|${{ env.TAG }}|g" orderService/cloudbuild.yaml
 
       - name: Build and Push Docker Image - orderService
         run: gcloud builds submit --config orderService/cloudbuild.yaml orderService --suppress-logs
@@ -123,6 +126,9 @@ jobs:
 
       - name: Check workspace contents before 7
         run: ls
+
+      - name: Debug unique tag 2
+        run: echo "TAG is ${{ env.TAG }}, and/or ${TAG}"
 
       - name: Update Deployment YAML - userService
         run: sed -i "s|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice:latest|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice:${TAG}|g" userService/deployment.yaml
