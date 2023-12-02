@@ -37,13 +37,13 @@ jobs:
         run: sed -i "s|\$_TAG|${{ steps.tag.outputs.TAG }}|g" userService/cloudbuild.yaml
 
       - name: Build and Push Docker Image - userService
-        run: gcloud builds submit --config userService/cloudbuild.yaml userService
+        run: gcloud builds submit --config userService/cloudbuild.yaml userService --suppress-logs
 
       - name: Replace TAG placeholder - orderService
         run: sed -i "s|\$_TAG|${{ steps.tag.outputs.TAG }}|g" orderService/cloudbuild.yaml
 
       - name: Build and Push Docker Image - orderService
-        run: gcloud builds submit --config orderService/cloudbuild.yaml orderService
+        run: gcloud builds submit --config orderService/cloudbuild.yaml orderService --suppress-logs
 
   deploy:
     needs: build

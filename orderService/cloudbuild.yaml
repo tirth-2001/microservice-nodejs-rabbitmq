@@ -9,3 +9,5 @@ steps:
       ]
 images:
   - 'gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice:$_TAG'
+options:
+  logging: CLOUD_LOGGING_ONLY
