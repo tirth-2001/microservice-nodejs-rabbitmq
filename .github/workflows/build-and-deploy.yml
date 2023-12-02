@@ -92,10 +92,11 @@ jobs:
       - name: Debug kubectl context
         run: kubectl config current-context
 
+      - name: Check workspace contents
+        run: ls -R
+
       - name: Deploy to GKE - userService
-        run: |
-          kubectl apply -f userService/deployment.yaml
+        run: kubectl apply -f userService/deployment.yaml
 
       - name: Deploy to GKE - orderService
-        run: |
-          kubectl apply -f orderService/deployment.yaml
+        run: kubectl apply -f orderService/deployment.yaml
