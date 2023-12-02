@@ -31,11 +31,11 @@ jobs:
 
       - name: Build and Push Docker Image for userService
         run: |
-          gcloud builds submit --config userService/cloudbuild.yaml userService
+          gcloud builds submit --config userService/cloudbuild.yaml --async userService
 
       - name: Build and Push Docker Image for orderService
         run: |
-          gcloud builds submit --config orderService/cloudbuild.yaml orderService
+          gcloud builds submit --config orderService/cloudbuild.yaml --async orderService
 
   deploy:
     needs: build
