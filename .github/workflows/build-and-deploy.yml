@@ -31,7 +31,7 @@ jobs:
 
       - name: Generate Unique Image Tag
         id: tag
-        run: echo "::set-output name=TAG::$(git rev-parse --short $GITHUB_SHA)"
+        run: echo "TAG=$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
 
       - name: Replace TAG placeholder - userService
         run: sed -i "s|\$_TAG|${{ steps.tag.outputs.TAG }}|g" userService/cloudbuild.yaml
@@ -125,10 +125,10 @@ jobs:
         run: ls
 
       - name: Update Deployment YAML - userService
-        run: sed -i "s|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice:latest|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice:${{ needs.build.outputs.TAG }}|g" userService/deployment.yaml
+        run: sed -i "s|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice:latest|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice:${TAG}|g" userService/deployment.yaml
 
       - name: Update Deployment YAML - orderService
-        run: sed -i "s|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice:latest|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice:${{ needs.build.outputs.TAG }}|g" orderService/deployment.yaml
+        run: sed -i "s|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice:latest|gcr.io/micro-services-406818/ms_nodejs_rabbitmq-orderservice:${TAG}|g" orderService/deployment.yaml
 
       - name: Deploy to GKE - userService
         run: kubectl apply -f userService/deployment.yaml
