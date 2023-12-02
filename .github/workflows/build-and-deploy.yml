@@ -92,8 +92,20 @@ jobs:
       - name: Debug kubectl context
         run: kubectl config current-context
 
-      - name: Check workspace contents
+      - name: Check workspace contents before
         run: ls -R
+
+      - name: Change working directory to repo root
+        run: cd $GITHUB_WORKSPACE
+
+      - name: Check workspace contents before
+        run: ls -R
+
+      - name: Check userService contents
+        run: ls -R userService
+
+      - name: Check orderService contents
+        run: ls -R orderService
 
       - name: Deploy to GKE - userService
         run: kubectl apply -f userService/deployment.yaml
