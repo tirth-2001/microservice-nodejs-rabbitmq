@@ -49,6 +49,15 @@ jobs:
       - name: Check workspace contents before 1
         run: ls -R
 
+      - name: Check workspace contents before 1.1
+        run: cd ..
+
+      - name: Check workspace contents before 1.2
+        run: ls -R
+
+      - name: Check workspace contents before 1.3
+        run: cd ..
+
       - name: Authenticate with Google Cloud
         uses: 'google-github-actions/auth@v1'
         with:
