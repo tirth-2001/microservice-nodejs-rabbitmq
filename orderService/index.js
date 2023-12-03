@@ -5,6 +5,12 @@ const amqp = require('amqplib')
 const app = express()
 const port = process.env.PORT || 3002
 
+const rabbitMQHost = '35.202.146.163' // External IP
+const rabbitMQPort = 5672 // AMQP port
+const rabbitMQUrl = `amqp://${rabbitMQHost}:${rabbitMQPort}`
+
+console.log('[rabbitMq URL]', rabbitMQUrl)
+
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
@@ -23,11 +29,11 @@ connectToRabbitMQ('order_queue', (message) => {
 
 		console.log('getting message in order_queue', message.content.toString())
 
-		setTimeout(() => {
-			console.log(
-				`Order created for user ${userId} - Product: ${product}, Quantity: ${quantity}`
-			)
-		}, 3000)
+		// setTimeout(() => {
+		console.log(
+			`Order created for user ${userId} - Product: ${product}, Quantity: ${quantity}`
+		)
+		// }, 3000)
 	} catch (err) {
 		console.log('[orderService] error in connectToRabbitMQ callback', err)
 	}
@@ -39,7 +45,7 @@ app.listen(port, () => {
 
 async function connectToRabbitMQ(queue, callback) {
 	try {
-		const connection = await amqp.connect('amqp://rabbitmq')
+		const connection = await amqp.connect(rabbitMQUrl)
 		const channel = await connection.createChannel()
 
 		console.log('[connectRabbitMq] queue', queue)

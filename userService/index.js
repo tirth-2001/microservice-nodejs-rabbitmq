@@ -5,6 +5,12 @@ const amqp = require('amqplib')
 const app = express()
 const port = process.env.PORT || 3001
 
+const rabbitMQHost = '35.202.146.163' // External IP
+const rabbitMQPort = 5672 // AMQP port
+const rabbitMQUrl = `amqp://${rabbitMQHost}:${rabbitMQPort}`
+
+console.log('[rabbitMq URL]', rabbitMQUrl)
+
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
@@ -44,7 +50,7 @@ app.listen(port, () => {
 })
 
 async function sendMessage(queue, message) {
-	const connection = await amqp.connect('amqp://rabbitmq')
+	const connection = await amqp.connect(rabbitMQUrl)
 	const channel = await connection.createChannel()
 
 	channel.assertQueue(queue, { durable: false })
