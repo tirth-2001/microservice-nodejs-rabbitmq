@@ -14,9 +14,10 @@ spec:
     spec:
       containers:
         - name: rabbitmq-container
-          image: gcr.io/micro-services-406818/ms_nodejs_rabbitmq-rabbitmq-v2:amd64
+          image: gcr.io/micro-services-406818/ms_nodejs_rabbitmq-rabbitmq-v4:amd64
           ports:
             - containerPort: 5672 # RabbitMQ default port
+            - containerPort: 15672 # RabbitMQ management UI port
           env:
             - name: RABBITMQ_DEFAULT_USER
               value: guest

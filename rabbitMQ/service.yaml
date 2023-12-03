@@ -6,7 +6,12 @@ spec:
   selector:
     app: rabbitmq
   ports:
-    - protocol: TCP
+    - name: rabbitmq
+      protocol: TCP
       port: 5672 # RabbitMQ default port
       targetPort: 5672
+    - name: rabbitmq-management
+      protocol: TCP
+      port: 15672 # RabbitMQ management UI port
+      targetPort: 15672
   type: LoadBalancer
