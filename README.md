@@ -69,3 +69,45 @@ kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 
 docker run -it --rm gcr.io/micro-services-406818/ms_nodejs_rabbitmq-userservice-v2:arm64 sh
+
+# Kubernetes Dashboard create SA and get token
+
+## Create service account
+
+kubectl create serviceaccount my-dashboard-sa -n kubernetes-dashboard
+
+## Create token manually
+
+kubectl create secret generic my-dashboard-sa-token --from-literal=token=$(kubectl get secret -n kubernetes-dashboard $(kubectl get sa my-dashboard-sa -n kubernetes-dashboard -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 --decode) -n kubernetes-dashboard
+
+## Bind the service account to a cluster role (e.g., cluster-admin)
+
+kubectl create clusterrolebinding my-dashboard-sa-binding --clusterrole=cluster-admin --serviceaccount=kubernetes-dashboard:my-dashboard-sa
+
+## Get the secret name associated with the service account
+
+SECRET_NAME=$(kubectl -n kubernetes-dashboard get sa/my-dashboard-sa -o jsonpath="{.secrets[0].name}")
+
+## Get the token
+
+TOKEN=$(kubectl -n kubernetes-dashboard get secret/${SECRET_NAME} -o jsonpath="{.data.token}" | base64 --decode)
+
+echo "Token: ${TOKEN}"
+
+---
+
+# Get temporary token
+
+kubectl create token <service account name> -n <namespace>
+kubectl create token dashboard-admin (this is service account name) -n kubernetes-dashboard (namespace)
+kubectl create token dashboard-admin -n kubernetes-dashboard --duration=360h --output json
+
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+name: dashboard-admin-secret
+annotations:
+kubernetes.io/service-account.name: dashboard-admin
+type: kubernetes.io/service-account-token
+EOF
